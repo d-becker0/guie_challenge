@@ -1,0 +1,3 @@
+make tfrecs = https://www.kaggle.com/code/dantebecker/image-data-cleaning-maybe/edit
+
+get google gcs links = https://www.kaggle.com/dantebecker/get-gcs-links/edit
