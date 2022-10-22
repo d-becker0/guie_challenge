@@ -37,10 +37,10 @@ class ArcMarginProduct(tf.keras.layers.Layer):
         return config
 
     def build(self, input_shape):
-        super(ArcMarginProduct, self).build(input_shape[0])
+        super(ArcMarginProduct, self).build(input_shape.as_list()[1])
         self.W = self.add_weight(
             name='W',
-            shape=(int(input_shape[0][-1]),self.n_classes), #  # (n_class, img_embed, self.k)  --> I think... int(input_shape[0][-1]) same as emb dim (b/c of previous dense)
+            shape=(input_shape.as_list()[1],self.n_classes),
             initializer='glorot_uniform',
             dtype='float32',
             trainable=True,
