@@ -37,10 +37,10 @@ class ArcMarginProduct(tf.keras.layers.Layer):
         return config
 
     def build(self, input_shape):
-        super(ArcMarginProduct, self).build(input_shape.as_list()[1])
+        super(ArcMarginProduct, self).build(input_shape[0][-1]) # input_shape[0][-1], since inputs = tuple of ((batch, emb_size), label)
         self.W = self.add_weight(
             name='W',
-            shape=(input_shape.as_list()[1],self.n_classes),
+            shape=(input_shape[0][-1],self.n_classes),
             initializer='glorot_uniform',
             dtype='float32',
             trainable=True,
@@ -49,7 +49,6 @@ class ArcMarginProduct(tf.keras.layers.Layer):
 
     def call(self, inputs):
         X, y = inputs #
-        
         y = tf.cast(y, dtype=tf.int32)
         
         angle = tf.matmul(
@@ -57,9 +56,11 @@ class ArcMarginProduct(tf.keras.layers.Layer):
               tf.math.l2_normalize(self.W)
             )
 
-        angle = tf.math.acos(tf.transpose(angle, perm=[1,0]))
+        angle = tf.math.acos(angle)
 
         # https://hav4ik.github.io/articles/deep-metric-learning-survey#fig-net-gem-af
+        # describes margin as only being added to correct class
+        
         one_hot = tf.cast(
             tf.one_hot(y, depth=self.n_classes),
             dtype=angle.dtype

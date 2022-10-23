@@ -40,12 +40,12 @@ class SubcenterArcMarginProduct(tf.keras.layers.Layer):
         })
         return config
 
-# TODO: make sure there is NO bias term when building this weight
+# TODO: make sure there is NO bias term when building this weight -> there is not
     def build(self, input_shape):
-        super(SubcenterArcMarginProduct, self).build(input_shape[0])
+        super(SubcenterArcMarginProduct, self).build(input_shape[0][-1])
         self.W = self.add_weight(
             name='W',
-            shape=(self.n_classes,int(input_shape[0][-1]),self.k), #  # (n_class, img_embed, self.k)  --> I think... int(input_shape[0][-1]) same as emb dim (b/c of previous dense)
+            shape=(self.n_classes,input_shape[0][-1],self.k), 
             initializer='glorot_uniform',
             dtype='float32',
             trainable=True,
@@ -57,22 +57,19 @@ class SubcenterArcMarginProduct(tf.keras.layers.Layer):
         box. Based on a l2 normalisation step on both embedding feature xi ∈ R 512×1 and all sub-centers W ∈ R N×K×512, we get the subclass-wise similarity score S ∈ R
         N×K by a matrix multiplication WT xi. After a max pooling step, we can easily get the class-wise similarity score S 0 ∈ R N×1. The following steps are same as ArcFace"""
     
-    #@tf.function(jit_compile=True)
     def call(self, inputs):
-        X, y = inputs #
- 
+        X, y = inputs
         y = tf.cast(y, dtype=tf.int32)
-        
 
         # expecting  (? x 256) x (256 x num_classes x 3 sub centers) = (? x num_classes x 3 subcenters)
         # not the case with batches... seems like it needs (? x 256) X (numclasses x 256 x subcenters)... WHY?!?!?! 
 
         class_by_centers = tf.matmul(   # (? x 256) X (numclasses x 256 x subcenters) -> (numclasses x ? x subcenters)
               tf.math.l2_normalize(X),
-              tf.math.l2_normalize(self.W)
+              tf.math.l2_normalize(self.W, axis=[1])
             )
-
         max_centers = tf.math.reduce_max(class_by_centers, axis=[2]) # (numclasses x ? x subcenters) -> (numclasses x ?)
+        print(max_centers.get_shape())
         angle = tf.math.acos(tf.transpose(max_centers, perm=[1,0]))            # (numclasses x ?) -> (? x numclasses)
 
 
@@ -82,7 +79,7 @@ class SubcenterArcMarginProduct(tf.keras.layers.Layer):
             dtype=angle.dtype
         )
 
-        margin_angle = angle  + one_hot * self.m
+        margin_angle = angle + one_hot * self.m
 
 
         cosine = tf.math.cos(margin_angle)
