@@ -21,7 +21,7 @@ class EmbeddingCallback(Callback):
 
     # take model up to pt just before training head                                        done
     # apply pooling steps to get embs of size self.emb_dim                                 done
-    # calculate distances between all pts (comp intensive, so maybe find alternative)      
+    # calculate distances between all pts      
     # calculate scores based on those dists                                                
     def run(self):
         embeddings = self._get_embeddings()

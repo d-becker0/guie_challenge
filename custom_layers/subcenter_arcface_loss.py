@@ -69,7 +69,6 @@ class SubcenterArcMarginProduct(tf.keras.layers.Layer):
               tf.math.l2_normalize(self.W, axis=[1])
             )
         max_centers = tf.math.reduce_max(class_by_centers, axis=[2]) # (numclasses x ? x subcenters) -> (numclasses x ?)
-        print(max_centers.get_shape())
         angle = tf.math.acos(tf.transpose(max_centers, perm=[1,0]))            # (numclasses x ?) -> (? x numclasses)
 
 
