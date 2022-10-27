@@ -30,6 +30,7 @@ class TestEmbeddingCallback(Callback):
     def run(self):
         class_preds, embeddings = self._get_embeddings()
         embedding_data, tree = evaluation_metrics.test_embeddings(self.y_test,class_preds,embeddings,self.num_classes)
+        tree.build(20)
         emb_df = self._build_df(embedding_data, tree)
         score = self._score(emb_df)
         print("Competition score was", score)
@@ -49,7 +50,6 @@ class TestEmbeddingCallback(Callback):
         emb_df['neighbor_pred_classes'] = emb_df.apply(lambda row: evaluation_metrics.neighbor_classes(row,emb_df,true_classes=False), axis=1)
         emb_df['matching_neighbors'] = emb_df.apply(lambda row: evaluation_metrics.matching_neighbors(row,true_classes=True), axis=1)
         emb_df['matching_neighbor_preds'] = emb_df.apply(lambda row: evaluation_metrics.matching_neighbors(row,true_classes=False), axis=1)
-        print(emb_df['nearest_neighbors'])
 
         return emb_df
 

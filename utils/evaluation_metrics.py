@@ -8,7 +8,6 @@ def test_embeddings(true_class,pred_class,pred_emb,num_classes):
     
     # class with max prob is predicted
     pred_class = argmax(pred_class, axis=1)
-    print(pred_class)
 
     for i,pred_tensor, y_array, embedding in zip(range(len(true_class)),pred_class,true_class,pred_emb):
         pred = int(pred_tensor)
@@ -47,9 +46,7 @@ def matching_neighbors(row, true_classes = True):
 def competition_score(emb_df, neighbor_count):
     # Average of (correct neighbors / looked at neighbors)
     # ex: 1/N * (  sum(  1/neighbor_count * per_item_match_count  )  ) = 1/N * ( 1/neighbor_count * total_match_count)
-    print(emb_df['matching_neighbors'])
     total_matches = emb_df['matching_neighbors'].sum()
-    print('Total matches:',total_matches)
     score = total_matches / (neighbor_count * len(emb_df))
     return score
 
