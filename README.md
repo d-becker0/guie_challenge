@@ -1,2 +1,1 @@
-# Google Image Embedding
-
+# Google Image Embeddings
