@@ -1,4 +1,5 @@
-import abc
+from os import mkdir
+from os.path import isdir
 from datetime import datetime
 from collections import Counter
 
@@ -11,7 +12,7 @@ from utils import evaluation_metrics
 
 
 class TestEmbeddingCallback(Callback):
-    def __init__(self, x_test, y_test, save_dir:str, embedding_dim:int=64,num_classes:int=100, distance_type:str='euclidean'):
+    def __init__(self, x_test, y_test, save_dir:str, embedding_dim:int=64,num_classes:int=100, distance_type:str='euclidean', save=True):
         super().__init__()
         self.x_test = x_test
         self.y_test = y_test
@@ -19,8 +20,13 @@ class TestEmbeddingCallback(Callback):
         self.num_classes = num_classes
         self.distance_type = distance_type
         self.embedding_dim = embedding_dim
+        self.save = save
+        self.epoch = 1
+
+        if not isdir(self.save_dir):
+            mkdir(self.save_dir)
  
-    def on_test_end(self, logs=None):
+    def on_test_end(self, logs=None):  # seems like logs don't print... idk how to find what it contains
         return self.run()
 
     # take model up to pt just before training head                                        done  (in model definition)
@@ -34,6 +40,9 @@ class TestEmbeddingCallback(Callback):
         emb_df = self._build_df(embedding_data, tree)
         score = self._score(emb_df)
         print("Competition score was", score)
+        if self.save:
+            emb_df.to_csv(self.save_dir+'/'+str(self.epoch),index=False)
+        self.epoch+=1
 
 
     # self.model assigned by tf Callback
