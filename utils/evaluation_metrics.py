@@ -49,5 +49,3 @@ def competition_score(emb_df, neighbor_count):
     total_matches = emb_df['matching_neighbors'].sum()
     score = total_matches / (neighbor_count * len(emb_df))
     return score
-
-

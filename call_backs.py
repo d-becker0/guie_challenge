@@ -5,7 +5,6 @@ from collections import Counter
 
 from pandas import DataFrame
 
-import tensorflow as tf
 from keras.callbacks import Callback
 
 from utils import evaluation_metrics
@@ -64,6 +63,3 @@ class TestEmbeddingCallback(Callback):
 
     def _score(self, emb_df):
         return evaluation_metrics.competition_score(emb_df,5)
-
-    def _write_to_csv():
-        pass
